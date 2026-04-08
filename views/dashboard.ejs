@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — SteamCoupons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="nav-logo"><span class="logo-icon">⟨S⟩</span><span>SteamCoupons</span></a>
+  <div class="nav-links">
+    <a href="/dashboard">Dashboard</a>
+    <% if (user.role === 'admin') { %><a href="/admin" class="admin-link">Admin</a><% } %>
+    <span class="nav-user">@<%= user.username %></span>
+    <a href="/logout" class="btn-nav-logout">Logout</a>
+  </div>
+</nav>
+
+<div class="dashboard-container">
+  <div class="dash-header">
+    <div>
+      <h1>Your <span class="accent">Coupons</span></h1>
+      <p class="mono">Claimed: <%= claimed.length %> / <%= coupons.length %> available</p>
+    </div>
+    <div class="dash-user-badge">
+      <div class="user-avatar"><%= user.username[0].toUpperCase() %></div>
+      <div>
+        <div class="user-name"><%= user.username %></div>
+        <div class="user-role mono"><%= user.role %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="coupon-grid dash-grid">
+    <% coupons.forEach(c => { 
+      const isClaimed = claimed.includes(c.id);
+    %>
+    <div class="coupon-card <%= isClaimed ? 'claimed' : '' %>">
+      <div class="coupon-discount">-<%= c.discount %>%</div>
+      <div class="coupon-info">
+        <div class="coupon-game"><%= c.game %></div>
+        <div class="coupon-desc"><%= c.description %></div>
+        <div class="coupon-meta">
+          <% if (isClaimed) { %>
+            <span class="mono coupon-code revealed"><%= c.code %></span>
+          <% } else { %>
+            <span class="mono coupon-code">••••-••••-••••</span>
+          <% } %>
+          <span class="coupon-exp">Exp: <%= c.expires_at %></span>
+        </div>
+        <div class="coupon-uses mono">Used by <%= c.used_by %> gamers</div>
+      </div>
+      <% if (isClaimed) { %>
+        <div class="claimed-badge">✓ Claimed</div>
+      <% } else { %>
+        <form action="/claim/<%= c.id %>" method="POST">
+          <button type="submit" class="coupon-claim-btn">Claim →</button>
+        </form>
+      <% } %>
+    </div>
+    <% }) %>
+  </div>
+</div>
+<footer class="footer"><p>© 2025 SteamCoupons</p></footer>
+</body>
+</html>

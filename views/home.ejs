@@ -1,0 +1,109 @@
+<%
+  title = 'SteamCoupons - Free Steam Discounts'
+  body = ''
+%>
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SteamCoupons — Free Steam Discounts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="nav-logo"><span class="logo-icon">⟨S⟩</span><span>SteamCoupons</span></a>
+  <div class="nav-links">
+    <% if (user) { %>
+      <a href="/dashboard">Dashboard</a>
+      <% if (user.role === 'admin') { %><a href="/admin" class="admin-link">Admin</a><% } %>
+      <span class="nav-user">@<%= user.username %></span>
+      <a href="/logout" class="btn-nav-logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a>
+      <a href="/register" class="btn-nav-register">Register</a>
+    <% } %>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge mono">FREE STEAM COUPONS</div>
+    <h1 class="hero-title">Get <span class="accent">Exclusive</span><br>Game Discounts</h1>
+    <p class="hero-sub">Claim free coupon codes for your favorite Steam games. Updated daily with fresh deals from top publishers.</p>
+    <div class="hero-actions">
+      <a href="/register" class="btn-primary">Start Claiming</a>
+      <a href="/login" class="btn-ghost">Sign In</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">500+</span><span class="stat-label">Coupons</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">12K+</span><span class="stat-label">Users</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">Up to 75%</span><span class="stat-label">Off</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="floating-card fc1">
+      <div class="fc-discount">-75%</div>
+      <div class="fc-game">Cyberpunk 2077</div>
+    </div>
+    <div class="floating-card fc2">
+      <div class="fc-discount">-50%</div>
+      <div class="fc-game">Half-Life: Alyx</div>
+    </div>
+    <div class="floating-card fc3">
+      <div class="fc-discount">-60%</div>
+      <div class="fc-game">RDR2</div>
+    </div>
+  </div>
+</section>
+
+<section class="featured">
+  <div class="container">
+    <div class="section-header">
+      <h2>Featured <span class="accent">Coupons</span></h2>
+      <p class="mono">Latest deals — login to claim</p>
+    </div>
+    <div class="coupon-grid">
+      <% coupons.forEach(c => { %>
+      <div class="coupon-card">
+        <div class="coupon-discount">-<%= c.discount %>%</div>
+        <div class="coupon-info">
+          <div class="coupon-game"><%= c.game %></div>
+          <div class="coupon-desc"><%= c.description %></div>
+          <div class="coupon-meta">
+            <span class="mono coupon-code">••••••••••</span>
+            <span class="coupon-exp">Expires <%= c.expires_at %></span>
+          </div>
+        </div>
+        <a href="/login" class="coupon-claim-btn">Claim →</a>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <div class="container">
+    <h2>How It <span class="accent">Works</span></h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><h3>Register</h3><p>Create your free account in seconds.</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">02</div><h3>Browse</h3><p>Explore hundreds of available coupons.</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">03</div><h3>Claim</h3><p>Get your discount code instantly.</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">04</div><h3>Redeem</h3><p>Apply on Steam checkout & save.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2025 SteamCoupons &nbsp;·&nbsp; <span class="mono">For Educational Purposes</span></p>
+</footer>
+</body>
+</html>

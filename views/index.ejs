@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SteamCoupons.gg — Steam Endirim Kuponları</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-brand">
+    <div class="logo-icon">🎮</div>
+    SteamCoupons<span style="color:var(--accent)">.gg</span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="active">Ana Səhifə</a>
+    <% if (user) { %>
+      <a href="/dashboard">Kuponlarım</a>
+      <% if (user.role === 'admin') { %><a href="/admin">Admin</a><% } %>
+    <% } %>
+  </div>
+  <div class="nav-user">
+    <% if (user) { %>
+      <div class="nav-avatar"><%= user.username[0].toUpperCase() %></div>
+      <span style="font-size:0.875rem;color:var(--text-secondary)"><%= user.username %></span>
+      <a href="/logout" class="btn btn-ghost btn-sm">Çıxış</a>
+    <% } else { %>
+      <a href="/login" class="btn btn-ghost btn-sm">Daxil ol</a>
+      <a href="/register" class="btn btn-primary btn-sm">Qeydiyyat</a>
+    <% } %>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-tag">⚡ Canlı Endirim Kuponları</div>
+    <h1>Steam Oyunlarını<br><span>Ucuza Al</span></h1>
+    <p>Minlərlə Steam kuponu bir yerdə. Qeydiyyatdan keç, götür, oyna.</p>
+    <div class="hero-actions">
+      <% if (!user) { %>
+        <a href="/register" class="btn btn-primary">Pulsuz Qeydiyyat →</a>
+        <a href="/login" class="btn btn-outline">Daxil ol</a>
+      <% } else { %>
+        <a href="/dashboard" class="btn btn-primary">Kuponlarıma bax →</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <!-- Stats bar -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto;margin-bottom:3rem">
+    <div class="stat-card">
+      <div class="stat-num"><%= coupons.length %>+</div>
+      <div class="stat-label">Aktiv Kupon</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--green)">80%</div>
+      <div class="stat-label">Maks Endirim</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#a78bfa">∞</div>
+      <div class="stat-label">Oyun Seçimi</div>
+    </div>
+  </div>
+
+  <!-- Coupons -->
+  <div class="section-header">
+    <div class="section-title">🔥 Populyar Kuponlar</div>
+    <span class="section-badge"><%= coupons.length %> aktiv</span>
+  </div>
+
+  <% if (coupons.length > 0) { %>
+  <div class="grid-3">
+    <% coupons.forEach(c => { %>
+    <div class="coupon-card">
+      <div class="coupon-top">
+        <div>
+          <div class="game-name"><%= c.game_name %></div>
+          <% if (c.description) { %>
+          <div style="color:var(--text-muted);font-size:0.8rem;margin-top:0.25rem"><%= c.description %></div>
+          <% } %>
+        </div>
+        <div class="discount-badge">-<%= c.discount %>%</div>
+      </div>
+      <div class="coupon-bottom">
+        <div class="coupon-code">••••••••</div>
+        <% if (!user) { %>
+          <a href="/login" class="btn btn-sm btn-outline">Götür</a>
+        <% } else { %>
+          <button class="btn btn-sm btn-primary" onclick="claimCoupon(<%= c.id %>)">Götür</button>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <p>Hal-hazırda aktiv kupon yoxdur.</p>
+  </div>
+  <% } %>
+
+  <% if (!user) { %>
+  <div class="card mt-3" style="text-align:center;padding:2.5rem;margin-top:2.5rem;background:linear-gradient(135deg, var(--bg-card), var(--bg-elevated))">
+    <div style="font-size:2rem;margin-bottom:0.75rem">🎯</div>
+    <h3 style="font-family:'Rajdhani',sans-serif;font-size:1.4rem;margin-bottom:0.5rem">Bütün kuponlara çıxış əldə et</h3>
+    <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:0.9rem">Qeydiyyatdan keç — tamamilə pulsuzdur.</p>
+    <a href="/register" class="btn btn-primary">İndi başla →</a>
+  </div>
+  <% } %>
+</div>
+
+<div id="toast"></div>
+<script>
+function claimCoupon(id) {
+  fetch('/claim/' + id, { method: 'POST' })
+    .then(r => r.json())
+    .then(d => showToast(d.message + (d.code ? ' — Kod: ' + d.code : ''), d.success ? 'success' : 'error'));
+}
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  setTimeout(() => t.className = '', 3500);
+}
+</script>
+</body>
+</html>

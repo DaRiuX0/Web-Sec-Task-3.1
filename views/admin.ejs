@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — SteamCoupons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-body">
+<nav class="navbar admin-nav">
+  <a href="/" class="nav-logo"><span class="logo-icon">⟨S⟩</span><span>SteamCoupons</span></a>
+  <div class="nav-links">
+    <a href="/dashboard">Dashboard</a>
+    <span class="nav-user admin-badge">⚙ ADMIN</span>
+    <a href="/logout" class="btn-nav-logout">Logout</a>
+  </div>
+</nav>
+
+<div class="admin-container">
+  <div class="admin-header">
+    <h1><span class="accent">Admin</span> Control Panel</h1>
+    <p class="mono">Manage coupons, users, and platform settings</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val"><%= stats.totalUsers %></div><div class="stat-key mono">Total Users</div></div>
+    <div class="stat-card"><div class="stat-val"><%= stats.activeCoupons %></div><div class="stat-key mono">Active Coupons</div></div>
+    <div class="stat-card"><div class="stat-val"><%= stats.totalClaims %></div><div class="stat-key mono">Total Claims</div></div>
+    <div class="stat-card"><div class="stat-val"><%= stats.totalCoupons %></div><div class="stat-key mono">All Coupons</div></div>
+  </div>
+
+  <!-- Add Coupon -->
+  <div class="admin-section">
+    <h2>Add New Coupon</h2>
+    <form action="/admin/coupon/add" method="POST" class="admin-form">
+      <div class="admin-form-grid">
+        <div class="form-group"><label>Code</label><input type="text" name="code" placeholder="STEAM-CODE-2025" required></div>
+        <div class="form-group"><label>Discount %</label><input type="number" name="discount" min="1" max="100" placeholder="50" required></div>
+        <div class="form-group"><label>Game</label><input type="text" name="game" placeholder="Game Name" required></div>
+        <div class="form-group"><label>Expires</label><input type="date" name="expires_at"></div>
+        <div class="form-group full"><label>Description</label><input type="text" name="description" placeholder="Short description..."></div>
+      </div>
+      <button type="submit" class="btn-submit">Add Coupon</button>
+    </form>
+  </div>
+
+  <!-- Coupons Table -->
+  <div class="admin-section">
+    <h2>All Coupons</h2>
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Code</th><th>Game</th><th>Discount</th><th>Used</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% coupons.forEach(c => { %>
+          <tr class="<%= !c.is_active ? 'row-inactive' : '' %>">
+            <td class="mono"><%= c.code %></td>
+            <td><%= c.game %></td>
+            <td><span class="discount-badge">-<%= c.discount %>%</span></td>
+            <td class="mono"><%= c.used_by %></td>
+            <td class="mono"><%= c.expires_at || '—' %></td>
+            <td><span class="status-badge <%= c.is_active ? 'active' : 'inactive' %>"><%= c.is_active ? 'Active' : 'Inactive' %></span></td>
+            <td class="actions-cell">
+              <form action="/admin/coupon/toggle/<%= c.id %>" method="POST" style="display:inline">
+                <button class="btn-sm btn-toggle"><%= c.is_active ? 'Disable' : 'Enable' %></button>
+              </form>
+              <form action="/admin/coupon/delete/<%= c.id %>" method="POST" style="display:inline" onsubmit="return confirm('Delete this coupon?')">
+                <button class="btn-sm btn-delete">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="admin-section">
+    <h2>Registered Users</h2>
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>#</th><th>Username</th><th>Email</th><th>Role</th><th>Registered</th></tr></thead>
+        <tbody>
+          <% users.forEach(u => { %>
+          <tr>
+            <td class="mono"><%= u.id %></td>
+            <td><%= u.username %></td>
+            <td><%= u.email %></td>
+            <td><span class="role-badge <%= u.role %>"><%= u.role %></span></td>
+            <td class="mono"><%= u.created_at ? u.created_at.split('T')[0] : '—' %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<footer class="footer"><p>© 2025 SteamCoupons — Admin Portal</p></footer>
+</body>
+</html>
